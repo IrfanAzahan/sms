@@ -4,12 +4,16 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\CourseController;
 
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\RegistrationController;
+
 Route::middleware(['auth'])->group(function () {
-    // IT Staff Course Management Routes
-    Route::get('/admin/courses', [CourseController::class, 'index'])->name('admin.courses.index');
-    Route::post('/admin/courses', [CourseController::class, 'store'])->name('admin.courses.store');
-    Route::put('/admin/courses/{course}', [CourseController::class, 'update'])->name('admin.courses.update');
-    Route::delete('/admin/courses/{course}', [CourseController::class, 'destroy'])->name('admin.courses.destroy');
+    Route::middleware(['can:access-admin'])->group(function () {
+        Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+        Route::resource('/admin/courses', CourseController::class);
+        Route::get('/admin/registrations', [RegistrationController::class, 'index'])->name('admin.registrations.index');
+        Route::delete('/admin/registrations/{registration}', [RegistrationController::class, 'destroy'])->name('admin.registrations.destroy');
+    });
 });
 
 Route::get('/', function () {
